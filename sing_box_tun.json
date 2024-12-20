@@ -2,8 +2,25 @@
   "log": {
     "disabled": false,
     "level": "info",
-    "timestamp": true,
-      },
+    "timestamp": true
+  },
+  
+  "experimental": {
+    "clash_api": {
+      "external_controller": "0.0.0.0:9095",
+      "external_ui": "/etc/sing-box/ui",
+      "secret": "",
+      "external_ui_download_url": "https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip",
+      "external_ui_download_detour": "🎯 全球直连",
+      "default_mode": "rule"
+    },
+  "cache_file": {
+    "enabled": true,
+    "path": "/etc/sing-box/cache.db",
+    "store_fakeip": false
+    }
+  },
+  
   "dns": {
     "servers": [
       {"tag": "proxyDns", "address": "https://dns.google/dns-query", "address_resolver": "defaultDns", "address_strategy": "ipv4_only", "detour": "🚀 节点选择"},
@@ -32,14 +49,14 @@
       "platform": {
         "http_proxy": {
           "enabled": true,
-          "server": "0.0.0.0",
+          "server": "127.0.0.1",
           "server_port": 2080
         }
       }
     },
     {
       "type": "mixed",
-      "listen": "0.0.0.0",
+      "listen": "127.0.0.1",
       "listen_port": 2080,
       "sniff": true,
       "users": []
