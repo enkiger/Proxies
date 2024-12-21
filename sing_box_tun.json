@@ -32,7 +32,7 @@
       "mtu": 9000,
       "auto_route": true,
       "sniff": true,
-      "stack": "system",
+      "stack": "system"
     }
   ],
 
