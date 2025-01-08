@@ -1,4 +1,4 @@
-{
+no{
   "dns": {
     "fakeip": {
       "enabled": true,
@@ -574,7 +574,7 @@
       "type": "dns"
     }
   ],
-  "inbounds": [
+  "inbounds": {
     {
       "type": "tun",
       "address": [
@@ -597,5 +597,5 @@
       "listen": "127.0.0.1",
       "listen_port": 7890,
       "sniff": true
-    },
-  ]
+    }
+  }
