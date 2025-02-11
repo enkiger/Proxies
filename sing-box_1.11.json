@@ -160,12 +160,4 @@
             "tag": "direct"
         }
     ],
-    "experimental": {
-        "cache_file": {
-            "enabled": false,
-            "path": "cache.db",
-            "store_fakeip": true,
-            "store_rdrc": true
-        }
-    }
 }
