@@ -70,7 +70,6 @@
         {"tag": "Twitter","type": "selector","outbounds": ["🇭🇰 HongKong","🇺🇸 United States","🇸🇬 Singapore","🇯🇵 Japan","🇨🇳 Taiwan","direct"],"default": "direct","interrupt_exist_connections": true},
         {"tag": "Telegram","type": "selector","outbounds": ["🇭🇰 HongKong","🇺🇸 United States","🇸🇬 Singapore","🇯🇵 Japan","🇨🇳 Taiwan","direct"],"default": "direct","interrupt_exist_connections": true},
         {"tag": "Emby","type": "selector","outbounds": ["Proxy","🇭🇰 HongKong","🇺🇸 United States","🇸🇬 Singapore","🇯🇵 Japan","🇨🇳 Taiwan","direct"],"default": "direct","interrupt_exist_connections": true},
-
         {"tag": "🇭🇰 HongKong","type": "urltest","outbounds": [],"url": "http://1.1.1.1/generate_204","interval": "10m","tolerance": 0,"interrupt_exist_connections": false},
         {"tag": "🇺🇸 United States","type": "urltest","outbounds": [],"url": "http://1.1.1.1/generate_204","interval": "10m","tolerance": 0,"interrupt_exist_connections": false},
         {"tag": "🇸🇬 Singapore","type": "urltest","outbounds": [],"url": "http://1.1.1.1/generate_204","interval": "10m","tolerance": 0,"interrupt_exist_connections": false},
