@@ -385,7 +385,7 @@
         "tag":"Others",
         "type":"selector",
         "outbounds":[
-          "auto"
+          "auto",
           "{all}"
         ],
         "filter":[
