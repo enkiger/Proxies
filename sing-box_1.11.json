@@ -382,10 +382,10 @@
         ]
       },
       {
-        "tag":"Others",
-        "type":"selector",
-        "outbounds":[
-          "auto",
+        "tag": "Others",
+        "type": "selector",
+        "outbounds": [
+		  "auto",
           "{all}"
         ],
         "filter":[
