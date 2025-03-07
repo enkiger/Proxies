@@ -1,6 +1,6 @@
 {
-   "log": {
-    "level": "debug",
+  "log": {
+    "level": "info",
     "timestamp": true
   },
   "experimental": {
@@ -8,103 +8,136 @@
       "external_controller": "127.0.0.1:9090",
       "external_ui": "ui",
       "secret": "",
-      "external_ui_download_url": "https://mirror.ghproxy.com/https://github.com/MetaCubeX/Yacd-meta/archive/gh-pages.zip",
+      "external_ui_download_url": "https://gh-proxy.com/https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip",
       "external_ui_download_detour": "direct",
       "default_mode": "rule"
     },
     "cache_file": {
       "enabled": true,
-      "store_fakeip": false
+      "store_fakeip": true,
+      "store_rdrc": true
     }
   },
   "dns": {
+    "fakeip": {
+      "enabled": true,
+      "inet4_range": "198.18.0.0/15",
+      "inet6_range": "fc00::/18"
+    },
     "servers": [
       {
-        "tag": "proxyDns",
-        "address": "tls://8.8.8.8",
-        "detour": "proxy"
+        "tag": "google",
+        "address": "tls://8.8.8.8"
       },
       {
-        "tag": "localDns",
+        "tag": "local",
         "address": "https://223.5.5.5/dns-query",
         "detour": "direct"
       },
       {
-        "tag": "block",
-        "address": "rcode://success"
+        "tag": "fakeip",
+        "address": "fakeip"
       }
     ],
     "rules": [
       {
         "domain": [
-          "ghproxy.com",
-          "cdn.jsdelivr.net",
-          "testingcf.jsdelivr.net"
+          "cdn.jsdelivr.net"
         ],
-        "server": "localDns"
-      },
-      {
-        "rule_set": "geosite-category-ads-all",
-        "server": "block"
+        "server": "google"
       },
       {
         "outbound": "any",
-        "server": "localDns",
-        "disable_cache": true
-      },
-      {
-        "rule_set": "geosite-cn",
-        "server": "localDns"
+        "server": "local"
       },
       {
         "clash_mode": "direct",
-        "server": "localDns"
+        "server": "local"
       },
       {
         "clash_mode": "global",
-        "server": "proxyDns"
+        "server": "google"
       },
       {
-        "rule_set": "geosite-geolocation-!cn",
-        "server": "proxyDns"
+        "query_type": [
+          "A",
+          "AAAA"
+        ],
+        "rule_set": "geosite-cn",
+        "server": "fakeip"
+      },
+      {
+        "rule_set": "geosite-cn",
+        "server": "local"
+      },
+      {
+        "type": "logical",
+        "mode": "and",
+        "rules": [
+          {
+            "rule_set": "geosite-geolocation-!cn",
+            "invert": true
+          },
+          {
+            "rule_set": "geoip-cn"
+          }
+        ],
+        "server": "google",
+        "client_subnet": "114.114.114.114/24"
+      },
+      {
+        "query_type": [
+          "A",
+          "AAAA"
+        ],
+        "server": "fakeip"
       }
     ],
-    "final": "localDns",
-    "strategy": "ipv4_only"
+    "independent_cache": true,
+    "strategy": "prefer_ipv4"
   },
   "inbounds": [
     {
+      "tag": "tun-in",
       "type": "tun",
-      "inet4_address": "172.19.0.1/30",
-      "mtu": 9000,
+      "address": [
+        "172.19.0.0/30",
+        "fdfe:dcba:9876::0/126"
+      ],
+      "stack": "system",
       "auto_route": true,
       "strict_route": true,
-      "sniff": true,
-      "endpoint_independent_nat": false,
-      "stack": "system",
       "platform": {
         "http_proxy": {
           "enabled": true,
           "server": "127.0.0.1",
-          "server_port": 2080
+          "server_port": 7890
         }
       }
     },
     {
+      "tag": "mixed-in",
       "type": "mixed",
-      "listen": "127.0.0.1",
-      "listen_port": 2080,
-      "sniff": true,
-      "users": []
+      "listen": "0.0.0.0",
+      "listen_port": 7890
     }
   ],
   "outbounds": [
     {
-      "tag": "proxy",
+      "tag": "Proxy",
       "type": "selector",
       "outbounds": [
         "auto",
         "direct",
+        "移动优选 01",
+        "移动优选 02",
+        "移动优选 03",
+        "联通优选 01",
+        "联通优选 02",
+        "联通优选 03",
+        "电信优选 01",
+        "电信优选 02",
+        "电信优选 03",
         "🇭🇰 香港 01",
         "🇭🇰 香港 02",
         "🇭🇰 香港 03",
@@ -120,91 +153,66 @@
         "🇰🇷 韩国 03",
         "🇰🇷 韩国 04",
         "🇰🇷 韩国 05",
-        "🇹🇼 台湾 01",
-        "🇹🇼 台湾 02",
+        "🇰🇷 韩国 06",
+        "🇰🇷 韩国 07",
+        "🇰🇷 韩国 08",
+        "🇰🇷 韩国 09",
+        "🇰🇷 韩国 10",
         "🇯🇵 日本 01",
         "🇯🇵 日本 02",
         "🇯🇵 日本 03",
         "🇯🇵 日本 04",
         "🇯🇵 日本 05",
+        "🇯🇵 日本 06",
+        "🇯🇵 日本 07",
+        "🇯🇵 日本 08",
+        "🇯🇵 日本 09",
+        "🇯🇵 日本 10",
         "🇸🇬 新加坡 01",
         "🇸🇬 新加坡 02",
         "🇸🇬 新加坡 03",
         "🇸🇬 新加坡 04",
         "🇸🇬 新加坡 05",
+        "🇸🇬 新加坡 06",
+        "🇸🇬 新加坡 07",
+        "🇸🇬 新加坡 08",
+        "🇸🇬 新加坡 09",
+        "🇸🇬 新加坡 10",
         "🇺🇸 美国 01",
         "🇺🇸 美国 02",
         "🇺🇸 美国 03",
         "🇺🇸 美国 04",
         "🇺🇸 美国 05",
-        "🇨🇦 加拿大 01",
-        "🇨🇦 加拿大 02",
-        "🇨🇦 加拿大 03",
-        "🇨🇦 加拿大 04",
-        "🇦🇺 澳大利亚 01",
-        "🇦🇺 澳大利亚 02",
         "🇬🇧 英国 01",
         "🇬🇧 英国 02",
         "🇬🇧 英国 03",
+        "🇬🇧 英国 04",
+        "🇬🇧 英国 05",
+        "🇬🇧 英国 06",
+        "🇬🇧 英国 07",
+        "🇬🇧 英国 08",
+        "🇬🇧 英国 09",
+        "🇬🇧 英国 10",
         "🇫🇷 法国 01",
         "🇫🇷 法国 02",
         "🇫🇷 法国 03",
-        "🇮🇹 意大利 01",
-        "🇮🇹 意大利 02",
-        "🇮🇹 意大利 03",
-        "🇮🇹 意大利 04",
-        "🇳🇱 荷兰 01",
-        "🇳🇱 荷兰 02",
-        "🇳🇱 荷兰 03",
-        "🇳🇱 荷兰 04",
+        "🇫🇷 法国 04",
+        "🇫🇷 法国 05",
+        "🇫🇷 法国 06",
+        "🇫🇷 法国 07",
+        "🇫🇷 法国 08",
+        "🇫🇷 法国 09",
+        "🇫🇷 法国 10",
         "🇩🇪 德国 01",
         "🇩🇪 德国 02",
         "🇩🇪 德国 03",
         "🇩🇪 德国 04",
-        "🇳🇴 挪威 01",
-        "🇳🇴 挪威 02",
-        "🇳🇴 挪威 03",
-        "🇳🇴 挪威 04",
-        "🇳🇴 挪威 05",
-        "🇫🇮 芬兰 01",
-        "🇫🇮 芬兰 02",
-        "🇫🇮 芬兰 03",
-        "🇫🇮 芬兰 04",
-        "🇫🇮 芬兰 05",
-        "🇸🇪 瑞典 01",
-        "🇸🇪 瑞典 02",
-        "🇸🇪 瑞典 03",
-        "🇸🇪 瑞典 04",
-        "🇩🇰 丹麦 01",
-        "🇩🇰 丹麦 02",
-        "🇩🇰 丹麦 03",
-        "🇩🇰 丹麦 04",
-        "🇱🇹 立陶宛 01",
-        "🇱🇹 立陶宛 02",
-        "🇱🇹 立陶宛 03",
-        "🇷🇺 俄罗斯 01",
-        "🇷🇺 俄罗斯 02",
-        "🇷🇺 俄罗斯 03",
-        "🇹🇷 土耳其 01",
-        "🇹🇷 土耳其 02",
-        "🇵🇱 波兰 01",
-        "🇵🇱 波兰 02",
-        "🇵🇱 波兰 03",
-        "🇵🇱 波兰 04",
-        "🇦🇹 奥地利 01",
-        "🇦🇹 奥地利 02",
-        "🇦🇹 奥地利 03",
-        "🇪🇸 西班牙 01",
-        "🇪🇸 西班牙 02",
-        "🇪🇸 西班牙 03",
-        "🇷🇴 罗马尼亚 01",
-        "🇷🇴 罗马尼亚 02",
-        "🇷🇴 罗马尼亚 03",
-        "🇮🇪 都柏林 01",
-        "🇮🇪 都柏林 02",
-        "🇨🇿 捷克 01",
-        "🇨🇿 捷克 02",
-        "🇨🇿 捷克 03"
+        "🇩🇪 德国 05",
+        "🇩🇪 德国 06",
+        "🇩🇪 德国 07",
+        "🇩🇪 德国 08",
+        "🇩🇪 德国 09",
+        "🇩🇪 德国 10"
       ]
     },
     {
@@ -280,14 +288,9 @@
       "tag": "Bahamut",
       "type": "selector",
       "outbounds": [
-        "HongKong",
         "TaiWan",
-        "Singapore",
-        "Japan",
-        "America",
-        "Others"
-      ],
-      "default": "TaiWan"
+        "Proxy"
+      ]
     },
     {
       "tag": "Spotify",
@@ -299,7 +302,8 @@
         "Japan",
         "America",
         "Others"
-      ]
+      ],
+      "default": "America"
     },
     {
       "tag": "TikTok",
@@ -311,10 +315,10 @@
         "Japan",
         "America"
       ],
-      "default": "Singapore"
+      "default": "Japan"
     },
     {
-      "tag": "NETFLIX",
+      "tag": "Netflix",
       "type": "selector",
       "outbounds": [
         "HongKong",
@@ -392,30 +396,21 @@
       "tag": "Global",
       "type": "selector",
       "outbounds": [
-        "direct",
         "HongKong",
         "TaiWan",
         "Singapore",
         "Japan",
         "America",
-        "Others"
-      ],
-      "default": "HongKong"
+        "Others",
+        "direct"
+      ]
     },
     {
       "tag": "China",
       "type": "selector",
       "outbounds": [
         "direct",
-        "proxy"
-      ]
-    },
-    {
-      "tag": "AdBlock",
-      "type": "selector",
-      "outbounds": [
-        "block",
-        "direct"
+        "Proxy"
       ]
     },
     {
@@ -431,17 +426,14 @@
         "🇭🇰 香港 07",
         "🇭🇰 香港 08",
         "🇭🇰 香港 09",
-        "🇭🇰 香港 10",
-        "proxy"
+        "🇭🇰 香港 10"
       ]
     },
     {
       "tag": "TaiWan",
       "type": "selector",
       "outbounds": [
-        "🇹🇼 台湾 01",
-        "🇹🇼 台湾 02",
-        "proxy"
+        "Proxy"
       ]
     },
     {
@@ -453,7 +445,11 @@
         "🇸🇬 新加坡 03",
         "🇸🇬 新加坡 04",
         "🇸🇬 新加坡 05",
-        "proxy"
+        "🇸🇬 新加坡 06",
+        "🇸🇬 新加坡 07",
+        "🇸🇬 新加坡 08",
+        "🇸🇬 新加坡 09",
+        "🇸🇬 新加坡 10"
       ]
     },
     {
@@ -465,7 +461,11 @@
         "🇯🇵 日本 03",
         "🇯🇵 日本 04",
         "🇯🇵 日本 05",
-        "proxy"
+        "🇯🇵 日本 06",
+        "🇯🇵 日本 07",
+        "🇯🇵 日本 08",
+        "🇯🇵 日本 09",
+        "🇯🇵 日本 10"
       ]
     },
     {
@@ -476,94 +476,78 @@
         "🇺🇸 美国 02",
         "🇺🇸 美国 03",
         "🇺🇸 美国 04",
-        "🇺🇸 美国 05",
-        "proxy"
+        "🇺🇸 美国 05"
       ]
     },
     {
       "tag": "Others",
       "type": "selector",
       "outbounds": [
+        "auto",
+        "移动优选 01",
+        "移动优选 02",
+        "移动优选 03",
+        "联通优选 01",
+        "联通优选 02",
+        "联通优选 03",
+        "电信优选 01",
+        "电信优选 02",
+        "电信优选 03",
         "🇰🇷 韩国 01",
         "🇰🇷 韩国 02",
         "🇰🇷 韩国 03",
         "🇰🇷 韩国 04",
         "🇰🇷 韩国 05",
-        "🇨🇦 加拿大 01",
-        "🇨🇦 加拿大 02",
-        "🇨🇦 加拿大 03",
-        "🇨🇦 加拿大 04",
-        "🇦🇺 澳大利亚 01",
-        "🇦🇺 澳大利亚 02",
+        "🇰🇷 韩国 06",
+        "🇰🇷 韩国 07",
+        "🇰🇷 韩国 08",
+        "🇰🇷 韩国 09",
+        "🇰🇷 韩国 10",
         "🇬🇧 英国 01",
         "🇬🇧 英国 02",
         "🇬🇧 英国 03",
+        "🇬🇧 英国 04",
+        "🇬🇧 英国 05",
+        "🇬🇧 英国 06",
+        "🇬🇧 英国 07",
+        "🇬🇧 英国 08",
+        "🇬🇧 英国 09",
+        "🇬🇧 英国 10",
         "🇫🇷 法国 01",
         "🇫🇷 法国 02",
         "🇫🇷 法国 03",
-        "🇮🇹 意大利 01",
-        "🇮🇹 意大利 02",
-        "🇮🇹 意大利 03",
-        "🇮🇹 意大利 04",
-        "🇳🇱 荷兰 01",
-        "🇳🇱 荷兰 02",
-        "🇳🇱 荷兰 03",
-        "🇳🇱 荷兰 04",
+        "🇫🇷 法国 04",
+        "🇫🇷 法国 05",
+        "🇫🇷 法国 06",
+        "🇫🇷 法国 07",
+        "🇫🇷 法国 08",
+        "🇫🇷 法国 09",
+        "🇫🇷 法国 10",
         "🇩🇪 德国 01",
         "🇩🇪 德国 02",
         "🇩🇪 德国 03",
         "🇩🇪 德国 04",
-        "🇳🇴 挪威 01",
-        "🇳🇴 挪威 02",
-        "🇳🇴 挪威 03",
-        "🇳🇴 挪威 04",
-        "🇳🇴 挪威 05",
-        "🇫🇮 芬兰 01",
-        "🇫🇮 芬兰 02",
-        "🇫🇮 芬兰 03",
-        "🇫🇮 芬兰 04",
-        "🇫🇮 芬兰 05",
-        "🇸🇪 瑞典 01",
-        "🇸🇪 瑞典 02",
-        "🇸🇪 瑞典 03",
-        "🇸🇪 瑞典 04",
-        "🇩🇰 丹麦 01",
-        "🇩🇰 丹麦 02",
-        "🇩🇰 丹麦 03",
-        "🇩🇰 丹麦 04",
-        "🇱🇹 立陶宛 01",
-        "🇱🇹 立陶宛 02",
-        "🇱🇹 立陶宛 03",
-        "🇷🇺 俄罗斯 01",
-        "🇷🇺 俄罗斯 02",
-        "🇷🇺 俄罗斯 03",
-        "🇹🇷 土耳其 01",
-        "🇹🇷 土耳其 02",
-        "🇵🇱 波兰 01",
-        "🇵🇱 波兰 02",
-        "🇵🇱 波兰 03",
-        "🇵🇱 波兰 04",
-        "🇦🇹 奥地利 01",
-        "🇦🇹 奥地利 02",
-        "🇦🇹 奥地利 03",
-        "🇪🇸 西班牙 01",
-        "🇪🇸 西班牙 02",
-        "🇪🇸 西班牙 03",
-        "🇷🇴 罗马尼亚 01",
-        "🇷🇴 罗马尼亚 02",
-        "🇷🇴 罗马尼亚 03",
-        "🇮🇪 都柏林 01",
-        "🇮🇪 都柏林 02",
-        "🇨🇿 捷克 01",
-        "🇨🇿 捷克 02",
-        "🇨🇿 捷克 03",
-        "proxy"
+        "🇩🇪 德国 05",
+        "🇩🇪 德国 06",
+        "🇩🇪 德国 07",
+        "🇩🇪 德国 08",
+        "🇩🇪 德国 09",
+        "🇩🇪 德国 10"
       ]
     },
     {
       "tag": "auto",
       "type": "urltest",
       "outbounds": [
+        "移动优选 01",
+        "移动优选 02",
+        "移动优选 03",
+        "联通优选 01",
+        "联通优选 02",
+        "联通优选 03",
+        "电信优选 01",
+        "电信优选 02",
+        "电信优选 03",
         "🇭🇰 香港 01",
         "🇭🇰 香港 02",
         "🇭🇰 香港 03",
@@ -579,91 +563,66 @@
         "🇰🇷 韩国 03",
         "🇰🇷 韩国 04",
         "🇰🇷 韩国 05",
-        "🇹🇼 台湾 01",
-        "🇹🇼 台湾 02",
+        "🇰🇷 韩国 06",
+        "🇰🇷 韩国 07",
+        "🇰🇷 韩国 08",
+        "🇰🇷 韩国 09",
+        "🇰🇷 韩国 10",
         "🇯🇵 日本 01",
         "🇯🇵 日本 02",
         "🇯🇵 日本 03",
         "🇯🇵 日本 04",
         "🇯🇵 日本 05",
+        "🇯🇵 日本 06",
+        "🇯🇵 日本 07",
+        "🇯🇵 日本 08",
+        "🇯🇵 日本 09",
+        "🇯🇵 日本 10",
         "🇸🇬 新加坡 01",
         "🇸🇬 新加坡 02",
         "🇸🇬 新加坡 03",
         "🇸🇬 新加坡 04",
         "🇸🇬 新加坡 05",
+        "🇸🇬 新加坡 06",
+        "🇸🇬 新加坡 07",
+        "🇸🇬 新加坡 08",
+        "🇸🇬 新加坡 09",
+        "🇸🇬 新加坡 10",
         "🇺🇸 美国 01",
         "🇺🇸 美国 02",
         "🇺🇸 美国 03",
         "🇺🇸 美国 04",
         "🇺🇸 美国 05",
-        "🇨🇦 加拿大 01",
-        "🇨🇦 加拿大 02",
-        "🇨🇦 加拿大 03",
-        "🇨🇦 加拿大 04",
-        "🇦🇺 澳大利亚 01",
-        "🇦🇺 澳大利亚 02",
         "🇬🇧 英国 01",
         "🇬🇧 英国 02",
         "🇬🇧 英国 03",
+        "🇬🇧 英国 04",
+        "🇬🇧 英国 05",
+        "🇬🇧 英国 06",
+        "🇬🇧 英国 07",
+        "🇬🇧 英国 08",
+        "🇬🇧 英国 09",
+        "🇬🇧 英国 10",
         "🇫🇷 法国 01",
         "🇫🇷 法国 02",
         "🇫🇷 法国 03",
-        "🇮🇹 意大利 01",
-        "🇮🇹 意大利 02",
-        "🇮🇹 意大利 03",
-        "🇮🇹 意大利 04",
-        "🇳🇱 荷兰 01",
-        "🇳🇱 荷兰 02",
-        "🇳🇱 荷兰 03",
-        "🇳🇱 荷兰 04",
+        "🇫🇷 法国 04",
+        "🇫🇷 法国 05",
+        "🇫🇷 法国 06",
+        "🇫🇷 法国 07",
+        "🇫🇷 法国 08",
+        "🇫🇷 法国 09",
+        "🇫🇷 法国 10",
         "🇩🇪 德国 01",
         "🇩🇪 德国 02",
         "🇩🇪 德国 03",
         "🇩🇪 德国 04",
-        "🇳🇴 挪威 01",
-        "🇳🇴 挪威 02",
-        "🇳🇴 挪威 03",
-        "🇳🇴 挪威 04",
-        "🇳🇴 挪威 05",
-        "🇫🇮 芬兰 01",
-        "🇫🇮 芬兰 02",
-        "🇫🇮 芬兰 03",
-        "🇫🇮 芬兰 04",
-        "🇫🇮 芬兰 05",
-        "🇸🇪 瑞典 01",
-        "🇸🇪 瑞典 02",
-        "🇸🇪 瑞典 03",
-        "🇸🇪 瑞典 04",
-        "🇩🇰 丹麦 01",
-        "🇩🇰 丹麦 02",
-        "🇩🇰 丹麦 03",
-        "🇩🇰 丹麦 04",
-        "🇱🇹 立陶宛 01",
-        "🇱🇹 立陶宛 02",
-        "🇱🇹 立陶宛 03",
-        "🇷🇺 俄罗斯 01",
-        "🇷🇺 俄罗斯 02",
-        "🇷🇺 俄罗斯 03",
-        "🇹🇷 土耳其 01",
-        "🇹🇷 土耳其 02",
-        "🇵🇱 波兰 01",
-        "🇵🇱 波兰 02",
-        "🇵🇱 波兰 03",
-        "🇵🇱 波兰 04",
-        "🇦🇹 奥地利 01",
-        "🇦🇹 奥地利 02",
-        "🇦🇹 奥地利 03",
-        "🇪🇸 西班牙 01",
-        "🇪🇸 西班牙 02",
-        "🇪🇸 西班牙 03",
-        "🇷🇴 罗马尼亚 01",
-        "🇷🇴 罗马尼亚 02",
-        "🇷🇴 罗马尼亚 03",
-        "🇮🇪 都柏林 01",
-        "🇮🇪 都柏林 02",
-        "🇨🇿 捷克 01",
-        "🇨🇿 捷克 02",
-        "🇨🇿 捷克 03"
+        "🇩🇪 德国 05",
+        "🇩🇪 德国 06",
+        "🇩🇪 德国 07",
+        "🇩🇪 德国 08",
+        "🇩🇪 德国 09",
+        "🇩🇪 德国 10"
       ],
       "url": "http://www.gstatic.com/generate_204",
       "interval": "10m",
@@ -674,23 +633,15 @@
       "tag": "direct"
     },
     {
-      "type": "dns",
-      "tag": "dns-out"
-    },
-    {
-      "type": "block",
-      "tag": "block"
-    },
-    {
-      "tag": "🇭🇰 香港 01",
+      "tag": "移动优选 01",
       "type": "trojan",
-      "server": "43.198.207.3",
-      "server_port": 2087,
+      "server": "104.25.252.185",
+      "server_port": 8443,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -700,20 +651,227 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
+        }
+      }
+    },
+    {
+      "tag": "移动优选 02",
+      "type": "trojan",
+      "server": "104.25.254.197",
+      "server_port": 2096,
+      "password": "aws",
+      "tls": {
+        "enabled": true,
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "randomized"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "seg.banmahouer.us.kg"
+        }
+      }
+    },
+    {
+      "tag": "移动优选 03",
+      "type": "trojan",
+      "server": "104.25.253.197",
+      "server_port": 2053,
+      "password": "aws",
+      "tls": {
+        "enabled": true,
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "randomized"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "seg.banmahouer.us.kg"
+        }
+      }
+    },
+    {
+      "tag": "联通优选 01",
+      "type": "trojan",
+      "server": "104.20.30.149",
+      "server_port": 8443,
+      "password": "aws",
+      "tls": {
+        "enabled": true,
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "randomized"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "seg.banmahouer.us.kg"
+        }
+      }
+    },
+    {
+      "tag": "联通优选 02",
+      "type": "trojan",
+      "server": "172.67.74.9",
+      "server_port": 2087,
+      "password": "aws",
+      "tls": {
+        "enabled": true,
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "randomized"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "seg.banmahouer.us.kg"
+        }
+      }
+    },
+    {
+      "tag": "联通优选 03",
+      "type": "trojan",
+      "server": "104.20.30.149",
+      "server_port": 2087,
+      "password": "aws",
+      "tls": {
+        "enabled": true,
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "randomized"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "seg.banmahouer.us.kg"
+        }
+      }
+    },
+    {
+      "tag": "电信优选 01",
+      "type": "trojan",
+      "server": "104.19.57.183",
+      "server_port": 2096,
+      "password": "aws",
+      "tls": {
+        "enabled": true,
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "randomized"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "seg.banmahouer.us.kg"
+        }
+      }
+    },
+    {
+      "tag": "电信优选 02",
+      "type": "trojan",
+      "server": "104.19.103.190",
+      "server_port": 2096,
+      "password": "aws",
+      "tls": {
+        "enabled": true,
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "randomized"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "seg.banmahouer.us.kg"
+        }
+      }
+    },
+    {
+      "tag": "电信优选 03",
+      "type": "trojan",
+      "server": "104.19.107.190",
+      "server_port": 2096,
+      "password": "aws",
+      "tls": {
+        "enabled": true,
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "randomized"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "seg.banmahouer.us.kg"
+        }
+      }
+    },
+    {
+      "tag": "🇭🇰 香港 01",
+      "type": "trojan",
+      "server": "36.50.90.241",
+      "server_port": 35951,
+      "password": "aws",
+      "tls": {
+        "enabled": true,
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "randomized"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇭🇰 香港 02",
       "type": "trojan",
-      "server": "43.198.104.113",
-      "server_port": 2087,
+      "server": "103.117.100.147",
+      "server_port": 443,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -723,20 +881,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇭🇰 香港 03",
       "type": "trojan",
-      "server": "219.76.13.181",
+      "server": "219.76.13.177",
       "server_port": 443,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -746,20 +904,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇭🇰 香港 04",
       "type": "trojan",
-      "server": "219.76.13.166",
-      "server_port": 443,
+      "server": "83.147.2.104",
+      "server_port": 8080,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -769,20 +927,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇭🇰 香港 05",
       "type": "trojan",
-      "server": "83.147.3.165",
-      "server_port": 8080,
+      "server": "154.12.179.200",
+      "server_port": 17789,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -792,20 +950,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇭🇰 香港 06",
       "type": "trojan",
-      "server": "116.48.22.147",
-      "server_port": 443,
+      "server": "103.247.28.240",
+      "server_port": 37211,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -815,20 +973,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇭🇰 香港 07",
       "type": "trojan",
-      "server": "18.162.134.60",
-      "server_port": 8443,
+      "server": "154.3.39.16",
+      "server_port": 443,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -838,20 +996,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇭🇰 香港 08",
       "type": "trojan",
-      "server": "91.229.132.49",
-      "server_port": 8080,
+      "server": "8.212.48.236",
+      "server_port": 443,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -861,20 +1019,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇭🇰 香港 09",
       "type": "trojan",
-      "server": "156.254.115.241",
-      "server_port": 8443,
+      "server": "36.50.90.241",
+      "server_port": 47790,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -884,20 +1042,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇭🇰 香港 10",
       "type": "trojan",
-      "server": "116.49.95.50",
-      "server_port": 8443,
+      "server": "141.11.218.249",
+      "server_port": 8080,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -907,20 +1065,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇰🇷 韩国 01",
       "type": "trojan",
-      "server": "193.122.124.62",
-      "server_port": 443,
+      "server": "140.238.5.75",
+      "server_port": 13644,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -930,20 +1088,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇰🇷 韩国 02",
       "type": "trojan",
-      "server": "3.35.237.255",
+      "server": "132.145.94.80",
       "server_port": 443,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -953,20 +1111,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇰🇷 韩国 03",
       "type": "trojan",
-      "server": "3.38.250.62",
-      "server_port": 443,
+      "server": "132.226.23.92",
+      "server_port": 22053,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -976,20 +1134,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇰🇷 韩国 04",
       "type": "trojan",
-      "server": "131.186.31.110",
+      "server": "129.154.207.203",
       "server_port": 443,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -999,20 +1157,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇰🇷 韩国 05",
       "type": "trojan",
-      "server": "43.202.244.110",
-      "server_port": 443,
+      "server": "140.238.11.169",
+      "server_port": 587,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -1022,20 +1180,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
-      "tag": "🇹🇼 台湾 01",
+      "tag": "🇰🇷 韩国 06",
       "type": "trojan",
-      "server": "34.80.79.47",
-      "server_port": 2096,
+      "server": "146.56.140.79",
+      "server_port": 22561,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -1045,20 +1203,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
-      "tag": "🇹🇼 台湾 02",
+      "tag": "🇰🇷 韩国 07",
       "type": "trojan",
-      "server": "141.11.86.109",
-      "server_port": 8080,
+      "server": "131.186.18.212",
+      "server_port": 28887,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -1068,20 +1226,89 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
+        }
+      }
+    },
+    {
+      "tag": "🇰🇷 韩国 08",
+      "type": "trojan",
+      "server": "158.179.171.53",
+      "server_port": 40093,
+      "password": "aws",
+      "tls": {
+        "enabled": true,
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "randomized"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "seg.banmahouer.us.kg"
+        }
+      }
+    },
+    {
+      "tag": "🇰🇷 韩国 09",
+      "type": "trojan",
+      "server": "152.67.197.197",
+      "server_port": 19120,
+      "password": "aws",
+      "tls": {
+        "enabled": true,
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "randomized"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "seg.banmahouer.us.kg"
+        }
+      }
+    },
+    {
+      "tag": "🇰🇷 韩国 10",
+      "type": "trojan",
+      "server": "144.24.81.90",
+      "server_port": 35577,
+      "password": "aws",
+      "tls": {
+        "enabled": true,
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "randomized"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇯🇵 日本 01",
       "type": "trojan",
-      "server": "35.77.126.144",
+      "server": "54.249.135.43",
       "server_port": 443,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -1091,20 +1318,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇯🇵 日本 02",
       "type": "trojan",
-      "server": "158.101.148.105",
-      "server_port": 443,
+      "server": "20.78.8.44",
+      "server_port": 31593,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -1114,20 +1341,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇯🇵 日本 03",
       "type": "trojan",
-      "server": "131.186.60.210",
-      "server_port": 8080,
+      "server": "3.113.64.82",
+      "server_port": 443,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -1137,20 +1364,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇯🇵 日本 04",
       "type": "trojan",
-      "server": "132.145.116.185",
+      "server": "172.104.127.132",
       "server_port": 443,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -1160,20 +1387,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇯🇵 日本 05",
       "type": "trojan",
-      "server": "140.238.33.161",
+      "server": "18.183.158.211",
       "server_port": 443,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -1183,20 +1410,135 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
+        }
+      }
+    },
+    {
+      "tag": "🇯🇵 日本 06",
+      "type": "trojan",
+      "server": "13.230.34.30",
+      "server_port": 443,
+      "password": "aws",
+      "tls": {
+        "enabled": true,
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "randomized"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "seg.banmahouer.us.kg"
+        }
+      }
+    },
+    {
+      "tag": "🇯🇵 日本 07",
+      "type": "trojan",
+      "server": "85.113.70.29",
+      "server_port": 19125,
+      "password": "aws",
+      "tls": {
+        "enabled": true,
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "randomized"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "seg.banmahouer.us.kg"
+        }
+      }
+    },
+    {
+      "tag": "🇯🇵 日本 08",
+      "type": "trojan",
+      "server": "172.105.233.112",
+      "server_port": 18836,
+      "password": "aws",
+      "tls": {
+        "enabled": true,
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "randomized"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "seg.banmahouer.us.kg"
+        }
+      }
+    },
+    {
+      "tag": "🇯🇵 日本 09",
+      "type": "trojan",
+      "server": "139.162.127.55",
+      "server_port": 18836,
+      "password": "aws",
+      "tls": {
+        "enabled": true,
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "randomized"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "seg.banmahouer.us.kg"
+        }
+      }
+    },
+    {
+      "tag": "🇯🇵 日本 10",
+      "type": "trojan",
+      "server": "3.112.21.102",
+      "server_port": 443,
+      "password": "aws",
+      "tls": {
+        "enabled": true,
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "randomized"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇸🇬 新加坡 01",
       "type": "trojan",
-      "server": "106.75.133.65",
-      "server_port": 443,
+      "server": "139.162.33.248",
+      "server_port": 587,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -1206,20 +1548,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇸🇬 新加坡 02",
       "type": "trojan",
-      "server": "129.150.40.241",
+      "server": "43.156.253.94",
       "server_port": 443,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -1229,20 +1571,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇸🇬 新加坡 03",
       "type": "trojan",
-      "server": "52.77.97.162",
+      "server": "13.250.14.76",
       "server_port": 443,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -1252,20 +1594,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇸🇬 新加坡 04",
       "type": "trojan",
-      "server": "20.198.241.32",
-      "server_port": 2053,
+      "server": "213.35.108.135",
+      "server_port": 12596,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -1275,20 +1617,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇸🇬 新加坡 05",
       "type": "trojan",
-      "server": "18.141.138.141",
+      "server": "113.31.109.111",
       "server_port": 443,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -1298,20 +1640,135 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
+        }
+      }
+    },
+    {
+      "tag": "🇸🇬 新加坡 06",
+      "type": "trojan",
+      "server": "210.16.65.149",
+      "server_port": 443,
+      "password": "aws",
+      "tls": {
+        "enabled": true,
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "randomized"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "seg.banmahouer.us.kg"
+        }
+      }
+    },
+    {
+      "tag": "🇸🇬 新加坡 07",
+      "type": "trojan",
+      "server": "143.42.66.91",
+      "server_port": 443,
+      "password": "aws",
+      "tls": {
+        "enabled": true,
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "randomized"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "seg.banmahouer.us.kg"
+        }
+      }
+    },
+    {
+      "tag": "🇸🇬 新加坡 08",
+      "type": "trojan",
+      "server": "168.138.181.188",
+      "server_port": 61731,
+      "password": "aws",
+      "tls": {
+        "enabled": true,
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "randomized"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "seg.banmahouer.us.kg"
+        }
+      }
+    },
+    {
+      "tag": "🇸🇬 新加坡 09",
+      "type": "trojan",
+      "server": "139.162.48.174",
+      "server_port": 10000,
+      "password": "aws",
+      "tls": {
+        "enabled": true,
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "randomized"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "seg.banmahouer.us.kg"
+        }
+      }
+    },
+    {
+      "tag": "🇸🇬 新加坡 10",
+      "type": "trojan",
+      "server": "160.22.79.174",
+      "server_port": 443,
+      "password": "aws",
+      "tls": {
+        "enabled": true,
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "randomized"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇺🇸 美国 01",
       "type": "trojan",
-      "server": "47.79.38.70",
+      "server": "45.205.225.220",
       "server_port": 443,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -1321,20 +1778,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇺🇸 美国 02",
       "type": "trojan",
-      "server": "47.79.34.47",
+      "server": "38.28.194.67",
       "server_port": 443,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -1344,20 +1801,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇺🇸 美国 03",
       "type": "trojan",
-      "server": "65.75.193.154",
-      "server_port": 14491,
+      "server": "154.212.46.93",
+      "server_port": 443,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -1367,20 +1824,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇺🇸 美国 04",
       "type": "trojan",
-      "server": "38.59.246.41",
-      "server_port": 9443,
+      "server": "45.205.225.216",
+      "server_port": 443,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -1390,89 +1847,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇺🇸 美国 05",
       "type": "trojan",
-      "server": "154.17.231.21",
-      "server_port": 31566,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇨🇦 加拿大 01",
-      "type": "trojan",
-      "server": "40.233.70.7",
-      "server_port": 8443,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇨🇦 加拿大 02",
-      "type": "trojan",
-      "server": "40.233.70.7",
-      "server_port": 8443,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇨🇦 加拿大 03",
-      "type": "trojan",
-      "server": "107.175.37.179",
+      "server": "38.28.198.151",
       "server_port": 443,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -1482,76 +1870,7 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇨🇦 加拿大 04",
-      "type": "trojan",
-      "server": "107.175.2.53",
-      "server_port": 443,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇦🇺 澳大利亚 01",
-      "type": "trojan",
-      "server": "13.54.198.183",
-      "server_port": 443,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇦🇺 澳大利亚 02",
-      "type": "trojan",
-      "server": "54.79.133.41",
-      "server_port": 443,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
@@ -1563,8 +1882,8 @@
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -1574,20 +1893,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇬🇧 英国 02",
       "type": "trojan",
-      "server": "213.165.84.57",
+      "server": "213.165.88.177",
       "server_port": 443,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -1597,20 +1916,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇬🇧 英国 03",
       "type": "trojan",
-      "server": "3.9.9.137",
+      "server": "91.199.32.235",
       "server_port": 8443,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -1620,20 +1939,181 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
+        }
+      }
+    },
+    {
+      "tag": "🇬🇧 英国 04",
+      "type": "trojan",
+      "server": "5.144.181.108",
+      "server_port": 8443,
+      "password": "aws",
+      "tls": {
+        "enabled": true,
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "randomized"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "seg.banmahouer.us.kg"
+        }
+      }
+    },
+    {
+      "tag": "🇬🇧 英国 05",
+      "type": "trojan",
+      "server": "5.144.181.41",
+      "server_port": 2053,
+      "password": "aws",
+      "tls": {
+        "enabled": true,
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "randomized"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "seg.banmahouer.us.kg"
+        }
+      }
+    },
+    {
+      "tag": "🇬🇧 英国 06",
+      "type": "trojan",
+      "server": "5.144.182.204",
+      "server_port": 443,
+      "password": "aws",
+      "tls": {
+        "enabled": true,
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "randomized"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "seg.banmahouer.us.kg"
+        }
+      }
+    },
+    {
+      "tag": "🇬🇧 英国 07",
+      "type": "trojan",
+      "server": "5.144.182.154",
+      "server_port": 2053,
+      "password": "aws",
+      "tls": {
+        "enabled": true,
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "randomized"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "seg.banmahouer.us.kg"
+        }
+      }
+    },
+    {
+      "tag": "🇬🇧 英国 08",
+      "type": "trojan",
+      "server": "5.144.181.55",
+      "server_port": 2053,
+      "password": "aws",
+      "tls": {
+        "enabled": true,
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "randomized"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "seg.banmahouer.us.kg"
+        }
+      }
+    },
+    {
+      "tag": "🇬🇧 英国 09",
+      "type": "trojan",
+      "server": "5.144.181.80",
+      "server_port": 2053,
+      "password": "aws",
+      "tls": {
+        "enabled": true,
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "randomized"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "seg.banmahouer.us.kg"
+        }
+      }
+    },
+    {
+      "tag": "🇬🇧 英国 10",
+      "type": "trojan",
+      "server": "5.144.182.243",
+      "server_port": 2053,
+      "password": "aws",
+      "tls": {
+        "enabled": true,
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "randomized"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇫🇷 法国 01",
       "type": "trojan",
-      "server": "91.149.202.142",
+      "server": "188.245.214.248",
       "server_port": 443,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -1643,20 +2123,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇫🇷 法国 02",
       "type": "trojan",
-      "server": "51.44.86.78",
-      "server_port": 443,
+      "server": "91.107.245.13",
+      "server_port": 8443,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -1666,181 +2146,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇫🇷 法国 03",
       "type": "trojan",
-      "server": "35.177.50.118",
-      "server_port": 443,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇮🇹 意大利 01",
-      "type": "trojan",
-      "server": "51.107.9.31",
-      "server_port": 8443,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇮🇹 意大利 02",
-      "type": "trojan",
-      "server": "89.168.17.228",
-      "server_port": 443,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇮🇹 意大利 03",
-      "type": "trojan",
-      "server": "91.193.5.121",
-      "server_port": 8443,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇮🇹 意大利 04",
-      "type": "trojan",
-      "server": "87.120.237.36",
-      "server_port": 81,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇳🇱 荷兰 01",
-      "type": "trojan",
-      "server": "13.95.69.133",
-      "server_port": 8443,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇳🇱 荷兰 02",
-      "type": "trojan",
-      "server": "185.204.109.190",
-      "server_port": 8443,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇳🇱 荷兰 03",
-      "type": "trojan",
-      "server": "95.217.187.142",
+      "server": "195.201.39.163",
       "server_port": 8080,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -1850,20 +2169,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
-      "tag": "🇳🇱 荷兰 04",
+      "tag": "🇫🇷 法国 04",
       "type": "trojan",
-      "server": "178.32.58.147",
+      "server": "128.140.71.144",
       "server_port": 443,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -1873,20 +2192,158 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
+        }
+      }
+    },
+    {
+      "tag": "🇫🇷 法国 05",
+      "type": "trojan",
+      "server": "88.99.189.60",
+      "server_port": 443,
+      "password": "aws",
+      "tls": {
+        "enabled": true,
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "randomized"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "seg.banmahouer.us.kg"
+        }
+      }
+    },
+    {
+      "tag": "🇫🇷 法国 06",
+      "type": "trojan",
+      "server": "213.32.121.186",
+      "server_port": 2053,
+      "password": "aws",
+      "tls": {
+        "enabled": true,
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "randomized"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "seg.banmahouer.us.kg"
+        }
+      }
+    },
+    {
+      "tag": "🇫🇷 法国 07",
+      "type": "trojan",
+      "server": "195.201.148.147",
+      "server_port": 443,
+      "password": "aws",
+      "tls": {
+        "enabled": true,
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "randomized"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "seg.banmahouer.us.kg"
+        }
+      }
+    },
+    {
+      "tag": "🇫🇷 法国 08",
+      "type": "trojan",
+      "server": "157.90.119.128",
+      "server_port": 2096,
+      "password": "aws",
+      "tls": {
+        "enabled": true,
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "randomized"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "seg.banmahouer.us.kg"
+        }
+      }
+    },
+    {
+      "tag": "🇫🇷 法国 09",
+      "type": "trojan",
+      "server": "188.245.76.63",
+      "server_port": 2053,
+      "password": "aws",
+      "tls": {
+        "enabled": true,
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "randomized"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "seg.banmahouer.us.kg"
+        }
+      }
+    },
+    {
+      "tag": "🇫🇷 法国 10",
+      "type": "trojan",
+      "server": "141.95.193.15",
+      "server_port": 2053,
+      "password": "aws",
+      "tls": {
+        "enabled": true,
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "randomized"
+        }
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇩🇪 德国 01",
       "type": "trojan",
-      "server": "51.116.121.75",
-      "server_port": 443,
+      "server": "159.89.26.218",
+      "server_port": 2053,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -1896,20 +2353,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇩🇪 德国 02",
       "type": "trojan",
-      "server": "188.166.162.201",
-      "server_port": 443,
+      "server": "46.101.112.166",
+      "server_port": 8880,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -1919,20 +2376,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇩🇪 德国 03",
       "type": "trojan",
-      "server": "45.147.50.154",
+      "server": "195.201.232.34",
       "server_port": 443,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -1942,20 +2399,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
       "tag": "🇩🇪 德国 04",
       "type": "trojan",
-      "server": "91.107.128.128",
+      "server": "159.89.26.218",
       "server_port": 8443,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -1965,756 +2422,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
-      "tag": "🇳🇴 挪威 01",
+      "tag": "🇩🇪 德国 05",
       "type": "trojan",
-      "server": "91.225.217.162",
-      "server_port": 443,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇳🇴 挪威 02",
-      "type": "trojan",
-      "server": "46.32.184.247",
-      "server_port": 443,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇳🇴 挪威 03",
-      "type": "trojan",
-      "server": "91.227.248.40",
-      "server_port": 443,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇳🇴 挪威 04",
-      "type": "trojan",
-      "server": "46.36.223.141",
-      "server_port": 443,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇳🇴 挪威 05",
-      "type": "trojan",
-      "server": "95.164.84.9",
-      "server_port": 81,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇫🇮 芬兰 01",
-      "type": "trojan",
-      "server": "185.252.144.106",
-      "server_port": 443,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇫🇮 芬兰 02",
-      "type": "trojan",
-      "server": "95.216.143.166",
-      "server_port": 443,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇫🇮 芬兰 03",
-      "type": "trojan",
-      "server": "65.109.199.131",
-      "server_port": 443,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇫🇮 芬兰 04",
-      "type": "trojan",
-      "server": "45.144.234.149",
-      "server_port": 443,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇫🇮 芬兰 05",
-      "type": "trojan",
-      "server": "185.58.207.12",
-      "server_port": 443,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇸🇪 瑞典 01",
-      "type": "trojan",
-      "server": "178.250.159.120",
-      "server_port": 2053,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇸🇪 瑞典 02",
-      "type": "trojan",
-      "server": "194.87.252.20",
-      "server_port": 443,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇸🇪 瑞典 03",
-      "type": "trojan",
-      "server": "194.87.252.135",
-      "server_port": 2053,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇸🇪 瑞典 04",
-      "type": "trojan",
-      "server": "185.105.90.45",
-      "server_port": 2053,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇩🇰 丹麦 01",
-      "type": "trojan",
-      "server": "38.180.20.59",
-      "server_port": 2053,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇩🇰 丹麦 02",
-      "type": "trojan",
-      "server": "46.29.235.36",
-      "server_port": 2053,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇩🇰 丹麦 03",
-      "type": "trojan",
-      "server": "46.29.235.31",
-      "server_port": 2053,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇩🇰 丹麦 04",
-      "type": "trojan",
-      "server": "89.27.8.25",
-      "server_port": 443,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇱🇹 立陶宛 01",
-      "type": "trojan",
-      "server": "80.209.230.16",
-      "server_port": 443,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇱🇹 立陶宛 02",
-      "type": "trojan",
-      "server": "46.32.184.187",
-      "server_port": 443,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇱🇹 立陶宛 03",
-      "type": "trojan",
-      "server": "195.135.254.75",
-      "server_port": 443,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇷🇺 俄罗斯 01",
-      "type": "trojan",
-      "server": "77.223.96.158",
-      "server_port": 443,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇷🇺 俄罗斯 02",
-      "type": "trojan",
-      "server": "212.41.15.119",
-      "server_port": 443,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇷🇺 俄罗斯 03",
-      "type": "trojan",
-      "server": "185.254.190.70",
-      "server_port": 2053,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇹🇷 土耳其 01",
-      "type": "trojan",
-      "server": "62.3.12.185",
-      "server_port": 443,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇹🇷 土耳其 02",
-      "type": "trojan",
-      "server": "78.135.110.152",
-      "server_port": 2053,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇵🇱 波兰 01",
-      "type": "trojan",
-      "server": "45.85.210.210",
-      "server_port": 13019,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇵🇱 波兰 02",
-      "type": "trojan",
-      "server": "45.85.210.234",
-      "server_port": 25463,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇵🇱 波兰 03",
-      "type": "trojan",
-      "server": "185.144.245.62",
-      "server_port": 18556,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇵🇱 波兰 04",
-      "type": "trojan",
-      "server": "45.85.210.217",
-      "server_port": 10913,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇦🇹 奥地利 01",
-      "type": "trojan",
-      "server": "188.93.140.11",
-      "server_port": 443,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇦🇹 奥地利 02",
-      "type": "trojan",
-      "server": "91.184.248.39",
-      "server_port": 443,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇦🇹 奥地利 03",
-      "type": "trojan",
-      "server": "185.119.117.146",
+      "server": "185.139.69.181",
       "server_port": 8443,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -2724,20 +2445,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
-      "tag": "🇪🇸 西班牙 01",
+      "tag": "🇩🇪 德国 06",
       "type": "trojan",
-      "server": "185.114.72.148",
+      "server": "138.197.183.219",
       "server_port": 443,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -2747,20 +2468,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
-      "tag": "🇪🇸 西班牙 02",
+      "tag": "🇩🇪 德国 07",
       "type": "trojan",
-      "server": "45.86.229.28",
+      "server": "38.180.59.88",
       "server_port": 443,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -2770,20 +2491,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
-      "tag": "🇪🇸 西班牙 03",
+      "tag": "🇩🇪 德国 08",
       "type": "trojan",
-      "server": "212.227.144.37",
+      "server": "167.71.50.145",
       "server_port": 8443,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -2793,20 +2514,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
-      "tag": "🇷🇴 罗马尼亚 01",
+      "tag": "🇩🇪 德国 09",
       "type": "trojan",
-      "server": "65.38.120.186",
+      "server": "159.223.243.111",
       "server_port": 2053,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -2816,20 +2537,20 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     },
     {
-      "tag": "🇷🇴 罗马尼亚 02",
+      "tag": "🇩🇪 德国 10",
       "type": "trojan",
-      "server": "45.136.199.77",
+      "server": "5.252.226.232",
       "server_port": 443,
       "password": "aws",
       "tls": {
         "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
+        "insecure": false,
+        "server_name": "seg.banmahouer.us.kg",
         "utls": {
           "enabled": true,
           "fingerprint": "randomized"
@@ -2839,169 +2560,44 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇷🇴 罗马尼亚 03",
-      "type": "trojan",
-      "server": "45.136.199.132",
-      "server_port": 443,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇮🇪 都柏林 01",
-      "type": "trojan",
-      "server": "52.19.138.237",
-      "server_port": 8443,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇮🇪 都柏林 02",
-      "type": "trojan",
-      "server": "193.57.138.65",
-      "server_port": 81,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇨🇿 捷克 01",
-      "type": "trojan",
-      "server": "37.157.192.61",
-      "server_port": 9902,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇨🇿 捷克 02",
-      "type": "trojan",
-      "server": "92.118.149.45",
-      "server_port": 443,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
-        }
-      }
-    },
-    {
-      "tag": "🇨🇿 捷克 03",
-      "type": "trojan",
-      "server": "176.74.219.73",
-      "server_port": 8443,
-      "password": "aws",
-      "tls": {
-        "enabled": true,
-        "insecure": true,
-        "server_name": "niuihv.zebra2025.us.kg",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "randomized"
-        }
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "niuihv.zebra2025.us.kg"
+          "Host": "seg.banmahouer.us.kg"
         }
       }
     }
   ],
   "route": {
     "auto_detect_interface": true,
-    "final": "proxy",
+    "final": "Proxy",
     "rules": [
       {
-        "protocol": "dns",
-        "outbound": "dns-out"
+        "inbound": [
+          "tun-in",
+          "mixed-in"
+        ],
+        "action": "sniff"
       },
       {
-        "port": 53,
-        "outbound": "dns-out"
-      },
-      {
-        "network": "udp",
-        "port": 443,
-        "outbound": "block"
+        "type": "logical",
+        "mode": "or",
+        "rules": [
+          {
+            "port": 53
+          },
+          {
+            "protocol": "dns"
+          }
+        ],
+        "action": "hijack-dns"
       },
       {
         "rule_set": "geosite-category-ads-all",
-        "outbound": "AdBlock"
+        "clash_mode": "rule",
+        "action": "reject"
+      },
+      {
+        "rule_set": "geosite-category-ads-all",
+        "clash_mode": "global",
+        "outbound": "Proxy"
       },
       {
         "clash_mode": "direct",
@@ -3009,7 +2605,7 @@
       },
       {
         "clash_mode": "global",
-        "outbound": "proxy"
+        "outbound": "Proxy"
       },
       {
         "domain": [
@@ -3021,55 +2617,42 @@
         "outbound": "direct"
       },
       {
+        "ip_is_private": true,
+        "outbound": "direct"
+      },
+      {
         "rule_set": "geosite-openai",
         "outbound": "OpenAI"
       },
       {
-        "rule_set": "geosite-youtube",
+        "rule_set": [
+          "geosite-youtube",
+          "geoip-google",
+          "geosite-google",
+          "geosite-github"
+        ],
         "outbound": "Google"
-      },
-      {
-        "rule_set": "geoip-google",
-        "outbound": "Google"
-      },
-      {
-        "rule_set": "geosite-google",
-        "outbound": "Google"
-      },
-      {
-        "rule_set": "geosite-github",
-        "outbound": "Google"
-      },
-      {
-        "rule_set": "geoip-telegram",
-        "outbound": "Telegram"
-      },
-      {
-        "rule_set": "geosite-telegram",
-        "outbound": "Telegram"
-      },
-      {
-        "rule_set": "geoip-twitter",
-        "outbound": "Twitter"
-      },
-      {
-        "rule_set": "geosite-twitter",
-        "outbound": "Twitter"
-      },
-      {
-        "rule_set": "geoip-facebook",
-        "outbound": "Facebook"
       },
       {
         "rule_set": [
-          "geosite-facebook",
-          "geosite-instagram"
+          "geoip-telegram",
+          "geosite-telegram"
         ],
-        "outbound": "Facebook"
+        "outbound": "Telegram"
       },
       {
-        "rule_set": "geoip-bilibili",
-        "outbound": "BiliBili"
+        "rule_set": [
+          "geoip-twitter",
+          "geosite-twitter"
+        ],
+        "outbound": "Twitter"
+      },
+      {
+        "rule_set": [
+          "geoip-facebook",
+          "geosite-facebook"
+        ],
+        "outbound": "Facebook"
       },
       {
         "rule_set": "geosite-bilibili",
@@ -3088,23 +2671,22 @@
         "outbound": "TikTok"
       },
       {
-        "rule_set": "geoip-netflix",
-        "outbound": "NETFLIX"
-      },
-      {
-        "rule_set": "geosite-netflix",
-        "outbound": "NETFLIX"
+        "rule_set": [
+          "geoip-netflix",
+          "geosite-netflix"
+        ],
+        "outbound": "Netflix"
       },
       {
         "rule_set": "geosite-disney",
         "outbound": "Disney+"
       },
       {
-        "rule_set": "geosite-apple",
-        "outbound": "Apple"
-      },
-      {
-        "rule_set": "geosite-amazon",
+        "rule_set": [
+          "geoip-apple",
+          "geosite-apple",
+          "geosite-amazon"
+        ],
         "outbound": "Apple"
       },
       {
@@ -3112,15 +2694,17 @@
         "outbound": "Microsoft"
       },
       {
-        "rule_set": "geosite-category-games",
+        "rule_set": [
+          "geosite-category-games",
+          "geosite-dmm"
+        ],
         "outbound": "Games"
       },
       {
-        "rule_set": "geosite-hbo",
-        "outbound": "Streaming"
-      },
-      {
-        "rule_set": "geosite-primevideo",
+        "rule_set": [
+          "geosite-hbo",
+          "geosite-primevideo"
+        ],
         "outbound": "Streaming"
       },
       {
@@ -3128,245 +2712,222 @@
         "outbound": "Global"
       },
       {
-        "rule_set": "geosite-private",
-        "outbound": "direct"
-      },
-      {
-        "ip_is_private": true,
-        "outbound": "direct"
-      },
-      {
-        "rule_set": "geoip-cn",
-        "outbound": "China"
-      },
-      {
-        "rule_set": "geosite-cn",
+        "rule_set": [
+          "geoip-cn",
+          "geosite-cn"
+        ],
         "outbound": "China"
       }
     ],
     "rule_set": [
       {
-        "tag": "geoip-google",
+        "tag": "geosite-category-ads-all",
         "type": "remote",
         "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/google.srs",
-        "download_detour": "direct"
-      },
-      {
-        "tag": "geoip-telegram",
-        "type": "remote",
-        "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/telegram.srs",
-        "download_detour": "direct"
-      },
-      {
-        "tag": "geoip-twitter",
-        "type": "remote",
-        "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/twitter.srs",
-        "download_detour": "direct"
-      },
-      {
-        "tag": "geoip-facebook",
-        "type": "remote",
-        "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/facebook.srs",
-        "download_detour": "direct"
-      },
-      {
-        "tag": "geoip-netflix",
-        "type": "remote",
-        "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/netflix.srs",
-        "download_detour": "direct"
-      },
-      {
-        "tag": "geoip-apple",
-        "type": "remote",
-        "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo-lite/geoip/apple.srs",
-        "download_detour": "direct"
-      },
-      {
-        "tag": "geoip-bilibili",
-        "type": "remote",
-        "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo-lite/geoip/bilibili.srs",
-        "download_detour": "direct"
-      },
-      {
-        "tag": "geoip-cn",
-        "type": "remote",
-        "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/cn.srs",
-        "download_detour": "direct"
-      },
-      {
-        "tag": "geosite-private",
-        "type": "remote",
-        "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/private.srs",
+        "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/category-ads-all.srs",
         "download_detour": "direct"
       },
       {
         "tag": "geosite-openai",
         "type": "remote",
         "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/openai.srs",
+        "url": "https://cdn.jsdelivr.net/gh/Toperlock/sing-box-geosite@main/rule/OpenAI.srs",
         "download_detour": "direct"
       },
       {
         "tag": "geosite-youtube",
         "type": "remote",
         "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/youtube.srs",
+        "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/youtube.srs",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "geoip-google",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/google.srs",
         "download_detour": "direct"
       },
       {
         "tag": "geosite-google",
         "type": "remote",
         "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/google.srs",
+        "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/google.srs",
         "download_detour": "direct"
       },
       {
         "tag": "geosite-github",
         "type": "remote",
         "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/github.srs",
+        "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/github.srs",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "geoip-telegram",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/telegram.srs",
         "download_detour": "direct"
       },
       {
         "tag": "geosite-telegram",
         "type": "remote",
         "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/telegram.srs",
+        "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/telegram.srs",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "geoip-twitter",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/twitter.srs",
         "download_detour": "direct"
       },
       {
         "tag": "geosite-twitter",
         "type": "remote",
         "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/twitter.srs",
+        "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/twitter.srs",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "geoip-facebook",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/facebook.srs",
         "download_detour": "direct"
       },
       {
         "tag": "geosite-facebook",
         "type": "remote",
         "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/facebook.srs",
-        "download_detour": "direct"
-      },
-      {
-        "tag": "geosite-instagram",
-        "type": "remote",
-        "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/instagram.srs",
+        "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/facebook.srs",
         "download_detour": "direct"
       },
       {
         "tag": "geosite-bilibili",
         "type": "remote",
         "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/bilibili.srs",
+        "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/bilibili.srs",
         "download_detour": "direct"
       },
       {
         "tag": "geosite-bahamut",
         "type": "remote",
         "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/bahamut.srs",
+        "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/bahamut.srs",
         "download_detour": "direct"
       },
       {
         "tag": "geosite-spotify",
         "type": "remote",
         "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/spotify.srs",
+        "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/spotify.srs",
         "download_detour": "direct"
       },
       {
         "tag": "geosite-tiktok",
         "type": "remote",
         "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/tiktok.srs",
+        "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/tiktok.srs",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "geoip-netflix",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/netflix.srs",
         "download_detour": "direct"
       },
       {
         "tag": "geosite-netflix",
         "type": "remote",
         "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/netflix.srs",
+        "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/netflix.srs",
         "download_detour": "direct"
       },
       {
         "tag": "geosite-disney",
         "type": "remote",
         "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/disney.srs",
+        "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/disney.srs",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "geoip-apple",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo-lite/geoip/apple.srs",
         "download_detour": "direct"
       },
       {
         "tag": "geosite-apple",
         "type": "remote",
         "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/apple.srs",
+        "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/apple.srs",
         "download_detour": "direct"
       },
       {
         "tag": "geosite-amazon",
         "type": "remote",
         "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/amazon.srs",
+        "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/amazon.srs",
         "download_detour": "direct"
       },
       {
         "tag": "geosite-microsoft",
         "type": "remote",
         "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/microsoft.srs",
+        "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/microsoft.srs",
         "download_detour": "direct"
       },
       {
         "tag": "geosite-category-games",
         "type": "remote",
         "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/category-games.srs",
+        "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/category-games.srs",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "geosite-dmm",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/dmm.srs",
         "download_detour": "direct"
       },
       {
         "tag": "geosite-hbo",
         "type": "remote",
         "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/hbo.srs",
+        "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/hbo.srs",
         "download_detour": "direct"
       },
       {
         "tag": "geosite-primevideo",
         "type": "remote",
         "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/primevideo.srs",
-        "download_detour": "direct"
-      },
-      {
-        "tag": "geosite-cn",
-        "type": "remote",
-        "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/cn.srs",
+        "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/primevideo.srs",
         "download_detour": "direct"
       },
       {
         "tag": "geosite-geolocation-!cn",
         "type": "remote",
         "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/geolocation-!cn.srs",
+        "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/geolocation-!cn.srs",
         "download_detour": "direct"
       },
       {
-        "tag": "geosite-category-ads-all",
+        "tag": "geoip-cn",
         "type": "remote",
         "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/category-ads-all.srs",
+        "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/cn.srs",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "geosite-cn",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/cn.srs",
         "download_detour": "direct"
       }
     ]
