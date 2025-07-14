@@ -1,0 +1,253 @@
+{
+  "log": {
+    "disabled": false,
+    "level": "warn",
+    "timestamp": true
+  },
+  "experimental": {
+    "clash_api": {
+      "default_mode": "rule",
+      "external_controller": "127.0.0.1:9090",
+      "external_ui": "ui",
+      "external_ui_download_url": "https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip",
+      "external_ui_download_detour": "proxy"
+    },
+    "cache_file": {
+      "enabled": true,
+      "path": "cache.db",
+      "store_fakeip": true
+    }
+  },
+  "inbounds": [
+    {
+      "type": "tun",
+      "tag": "tun-in",
+      "interface_name": "sing-box",
+      "address": [
+        "172.19.0.0/30",
+        "fdfe:dcba:9876::0/126"
+      ],
+      "mtu": 9000,
+      "auto_redirect": true,
+      "auto_route": true,
+      "strict_route": true,
+      "stack": "system",
+      "platform": {
+        "http_proxy": {
+          "enabled": true,
+          "server": "127.0.0.1",
+          "server_port": 7891
+        }
+      },
+      "route_address": [
+        "198.18.0.0/15",
+        "fc00::/18",
+        "91.108.56.0/22",
+        "91.108.4.0/22",
+        "91.108.8.0/22",
+        "91.108.16.0/22",
+        "91.108.12.0/22",
+        "149.154.160.0/20",
+        "91.105.192.0/23",
+        "91.108.20.0/22",
+        "185.76.151.0/24",
+        "2001:b28:f23d::/48",
+        "2001:b28:f23f::/48",
+        "2001:67c:4e8::/48",
+        "2001:b28:f23c::/48",
+        "2a0a:f280::/32"
+      ]
+    },
+    {
+      "type": "socks",
+      "tag": "socks-in",
+      "listen": "127.0.0.1",
+      "listen_port": 7890
+    },
+    {
+      "type": "http",
+      "tag": "http-in",
+      "listen": "127.0.0.1",
+      "listen_port": 7891
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "selector",
+      "tag": "proxy",
+      "interrupt_exist_connections": true,
+      "outbounds": [
+        "warp",
+        "ss"
+      ]
+    },
+    {
+      "tag": "ss",
+      "type": "shadowsocks",
+      "server": "",
+      "server_port": 34132,
+      "method": "",
+      "password": ""
+    },
+    {
+      "type": "direct",
+      "tag": "direct"
+    }
+  ],
+  "route": {
+    "default_domain_resolver": {
+      "server": "ali-dns"
+    },
+    "rules": [
+      {
+        "action": "route",
+        "rule_set": "telegram",
+        "outbound": "proxy"
+      },
+      {
+        "action": "sniff",
+        "inbound": "tun-in",
+        "sniffer": [
+          "dns",
+          "http",
+          "tls",
+          "quic"
+        ]
+      },
+      {
+        "action": "hijack-dns",
+        "type": "logical",
+        "mode": "or",
+        "rules": [
+          {
+            "protocol": "dns"
+          },
+          {
+            "port": 53
+          }
+        ]
+      },
+      {
+        "action": "route",
+        "ip_is_private": true,
+        "outbound": "direct"
+      },
+      {
+        "action": "route",
+        "rule_set": "google",
+        "outbound": "proxy"
+      },
+      {
+        "action": "route",
+        "rule_set": "gfw",
+        "outbound": "proxy"
+      }
+    ],
+    "rule_set": [
+      {
+        "tag": "google",
+        "type": "remote",
+        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo/geosite/google.srs",
+        "format": "binary",
+        "download_detour": "proxy"
+      },
+      {
+        "tag": "gfw",
+        "type": "remote",
+        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo/geosite/gfw.srs",
+        "format": "binary",
+        "download_detour": "proxy"
+      },
+      {
+        "tag": "telegram",
+        "type": "remote",
+        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo/geoip/telegram.srs",
+        "format": "binary",
+        "download_detour": "proxy"
+      }
+    ],
+    "auto_detect_interface": true,
+    "final": "direct"
+  },
+  "dns": {
+    "servers": [
+      {
+        "tag": "ali-dns",
+        "type": "udp",
+        "server": "223.5.5.5"
+      },
+      {
+        "tag": "google-dns",
+        "type": "udp",
+        "server": "8.8.8.8",
+        "detour": "proxy"
+      },
+      {
+        "tag": "fakeip-dns",
+        "type": "fakeip",
+        "inet4_range": "198.18.0.0/15",
+        "inet6_range": "fc00::/18"
+      }
+    ],
+    "rules": [
+      {
+        "action": "predefined",
+        "query_type": [
+          "SVCB",
+          "HTTPS"
+        ],
+        "rcode": "NOTIMP"
+      },
+      {
+        "action": "route",
+        "invert": true,
+        "rule_set": [
+          "gfw",
+          "google"
+        ],
+        "server": "ali-dns"
+      },
+      {
+        "action": "route",
+        "query_type": [
+          "A",
+          "AAAA"
+        ],
+        "server": "fakeip-dns",
+        "rewrite_ttl": 1
+      }
+    ],
+    "disable_cache": false,
+    "disable_expire": false,
+    "independent_cache": true,
+    "final": "google-dns",
+    "strategy": "prefer_ipv4"
+  },
+  "endpoints": [
+    // warp example
+    {
+      "type": "wireguard",
+      "tag": "warp",
+      "system": false,
+      "name": "warp",
+      "mtu": 1280,
+      "address": [
+        "172.16.0.2/32",
+        "2606:4700:110:81f3:2a5b:3cad:9d4:9ea6/128"
+      ],
+      "private_key": "",
+      "peers": [
+        {
+          "address": "engage.cloudflareclient.com",
+          "port": 2408,
+          "public_key": "",
+          "pre_shared_key": "",
+          "allowed_ips": [
+            "0.0.0.0/0",
+            "::/0"
+          ]
+        }
+      ]
+    }
+  ]
+}
