@@ -7,9 +7,32 @@
 #(?=.*(hdslb\.com.*(\.zip|\.mp4)))^((?!(hdslb\.com\/bfs\/app-static\/)).)*$ url reject
 
 
+#[filter_local]
+#host,upos-sz-staticcos.bilivideo.com,reject
+
+#[rewrite_local]
+#^https?://upos-sz-staticcos\.bilivideo\.com url reject
+#^https?://[^/]*\.hdslb\.com(?!/bfs/app-static/).*(\.mp4|\.zip) url reject
+
+
+
+
 [filter_local]
+# 核心拦截域名（轻度）
 host,upos-sz-staticcos.bilivideo.com,reject
+host,upos-sz-mirrorakam.bilivideo.com,reject
 
 [rewrite_local]
-^https?://upos-sz-staticcos\.bilivideo\.com url reject
-^https?://[^/]*\.hdslb\.com(?!/bfs/app-static/).*(\.mp4|\.zip) url reject
+# ==================== 温和版 Bilibili 去广告 ====================
+
+# 1. 拦截主要广告/资源域名（不影响核心视频流）
+^https?://(upos-sz-staticcos\.bilivideo\.com|upos-sz-mirrorakam\.bilivideo\.com).*(ad|promotion|creative|monitor|report|resource\?resourceUrl) url reject
+
+# 2. hdslb.com 拦截广告素材，但保留视频和静态资源
+^https?://[^/]*\.hdslb\.com(?!/bfs/app-static/|/bfs/static/|/bfs/segment/|/bfs/videoshot/).*(ad|creative|\.zip|promotion|cm) url reject
+
+# 3. 拦截 App 接口中的广告相关请求（开屏、信息流、推荐广告等）
+^https?://(app\.bilibili\.com|api\.bilibili\.com|api\.vc\.bilibili\.com).*(ad|cm|promotion|splash|creative|feed|popup|banner) url reject
+
+# 4. 可选：轻度拦截追踪上报（进一步减少后台流量）
+^https?://(app\.bilibili\.com|api\.bilibili\.com).*(report|monitor|click|event) url reject
