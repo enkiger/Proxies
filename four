@@ -16,6 +16,8 @@ bestcf.030101.xyz:443#Bestcf优1
 ed23.zebra2025.dpdns.org#链式代理-美国1$socks5://34.174.40.246:1080
 ed23.zebra2025.dpdns.org#链式代理-美国2$socks5://38.32.108.198:1080
 ed23.zebra2025.dpdns.org#链式代理-美国3$socks5://50.114.206.152:5555
+ed23.zebra2025.dpdns.org#链式代理-美国4$socks5://206.123.156.224:5725
+ed23.zebra2025.dpdns.org#链式代理-美国5$socks5://47.238.203.170:50002
 ed23.zebra2025.dpdns.org#链式代理-美国高1$socks5://192.111.137.37:18762
 ed23.zebra2025.dpdns.org#链式代理-美国高2$socks5://192.252.208.70:14282
 ed23.zebra2025.dpdns.org#链式代理-美国高3$socks5://192.111.129.145:16894
@@ -27,12 +29,3 @@ ed23.zebra2025.dpdns.org#链式代理-香港高2$socks5://47.79.79.35:10808
 ed23.zebra2025.dpdns.org#链式代理-香港高3$socks5://43.161.217.219:1080
 ed23.zebra2025.dpdns.org#链式代理-香港高4$socks5://45.194.33.12:30001
 ed23.zebra2025.dpdns.org#链式代理-香港高5$socks5://8.210.54.203:1080
-ed23.zebra2025.dpdns.org#链式代理-台湾高1$socks5://206.123.156.232:6832
-ed23.zebra2025.dpdns.org#链式代理-台湾高2$socks5://152.32.230.12:7890
-ed23.zebra2025.dpdns.org#链式代理-台湾高3$socks5://165.154.243.94:1080
-ed23.zebra2025.dpdns.org#链式代理-日本高1$socks5://103.75.118.84:1080
-ed23.zebra2025.dpdns.org#链式代理-新加坡1$socks5://47.82.154.247:1080
-ed23.zebra2025.dpdns.org#链式代理-新加坡2$socks5://47.79.255.247:1080
-ed23.zebra2025.dpdns.org#链式代理-新加坡高1$socks5://51.79.177.162:1010
-ed23.zebra2025.dpdns.org#链式代理-新加坡高2$socks5://47.82.145.247:1080
-ed23.zebra2025.dpdns.org#链式代理-新加坡高3$socks5://47.82.146.247:1080
