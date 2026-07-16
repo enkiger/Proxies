@@ -1,0 +1,8 @@
+# name: 阿里云盘 Token 自动获取规则
+# description: 用于拦截并提取阿里云盘手机 App 的 refresh_token
+
+[rewrite_local]
+^https:\/\/(auth|api|aliyundrive)\.(aliyundrive|alipan)\.com\/v\d\/account\/token url script-response-body https://raw.githubusercontent.com/你的用户名/MyQuantumultX/main/aliyundrive_token.js
+
+[mitm]
+hostname = auth.aliyundrive.com, auth.alipan.com
