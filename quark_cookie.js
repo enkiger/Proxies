@@ -26,7 +26,8 @@ if (currentUrl && currentUrl.indexOf("kps=") > -1 && currentUrl.indexOf("sign=")
     console.log(qlCookie);
     console.log("================================================\n");
     
-    $.notify("夸克网盘", "🎉 成功无感获取抽奖 Cookie", "请前往圈X日志或长按弹窗复制最新凭证。");
+    $.notify("夸克网盘", "🎉 成功无感获取抽奖 Cookie", qlCookie);
+
 }
 
 $.done({});
