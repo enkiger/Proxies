@@ -30,3 +30,7 @@ ed23.zebra2025.dpdns.org#链式代理-美国$socks5://213.188.215.27:1080
 ed23.zebra2025.dpdns.org#链式代理-BR1$socks5://147.15.17.132:1083
 ed23.zebra2025.dpdns.org#链式代理-BR2$socks5://147.15.17.132:1081
 ed23.zebra2025.dpdns.org#US 链式SOCKS5代理$socks5://152.53.209.196:1080
+ed23.zebra2025.dpdns.org#HK 链式SOCKS5代理$socks5://150.242.218.27:1080
+ed23.zebra2025.dpdns.org#HK 链式SOCKS5代理$socks5://150.242.218.28:1080
+ed23.zebra2025.dpdns.org#HK 链式SOCKS5代理$socks5://150.242.218.30:1080
+ed23.zebra2025.dpdns.org#TW 链式SOCKS5代理$socks5://103.207.49.34:8888
