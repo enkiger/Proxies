@@ -3,9 +3,21 @@
 
 
 
+# [mitm]
+# hostname = *.10010.com, *.chinaunicom.cn
+
+# [rewrite_local]
+# ^https?:\/\/.*10010\.com\/.* url script-request-header https://raw.githubusercontent.com/enkiger/Proxies/refs/heads/main/china_unicom_cookie.js
+# ^https?:\/\/.*chinaunicom\.cn\/.* url script-request-header https://raw.githubusercontent.com/enkiger/Proxies/refs/heads/main/china_unicom_cookie.js
+
+
+# 中国联通 获取 Cookie 重写规则
+# 适用于 Quantumult X
+
 [mitm]
-hostname = *.10010.com, *.chinaunicom.cn
+hostname = act.10010.com, m.client.10010.com
 
 [rewrite_local]
-^https?:\/\/.*10010\.com\/.* url script-request-header https://raw.githubusercontent.com/enkiger/Proxies/refs/heads/main/china_unicom_cookie.js
-^https?:\/\/.*chinaunicom\.cn\/.* url script-request-header https://raw.githubusercontent.com/enkiger/Proxies/refs/heads/main/china_unicom_cookie.js
+# 匹配联通活动或日常登录接口，获取请求头中的 Cookie
+^https?:\/\/act\.10010\.com\/SigninApp\/signin\/querySigninActivity\.htm url script-request-header https://raw.githubusercontent.com/enkiger/Proxies/refs/heads/main/china_unicom_cookie.js
+^https?:\/\/m\.client\.10010\.com\/dailylottery\/static\/(textdl\/userLogin|active\/findActivityInfo) url script-request-header https://raw.githubusercontent.com/enkiger/Proxies/refs/heads/main/china_unicom_cookie.js
