@@ -1,10 +1,8 @@
-# 中国联通 获取 Cookie 重写规则
-# 适用于 Quantumult X
-
 [mitm]
-hostname = act.10010.com, m.client.10010.com
+# 扩大解密域名范围，包含网页版、小程序和客户端
+hostname = *.10010.com, *.chinaunicom.cn
 
 [rewrite_local]
-# 匹配联通活动或日常登录接口，获取请求头中的 Cookie
-^https?:\/\/act\.10010\.com\/SigninApp\/signin\/querySigninActivity\.htm url script-request-header https://raw.githubusercontent.com/enkiger/Proxies/refs/heads/main/china_unicom_cookie.js
-^https?:\/\/m\.client\.10010\.com\/dailylottery\/static\/(textdl\/userLogin|active\/findActivityInfo) url script-request-header https://raw.githubusercontent.com/enkiger/Proxies/refs/heads/main/china_unicom_cookie.js
+# 只要是联通相关的关键登录、查询、签到接口，全部拦截抓取
+^https?:\/\/.*10010\.com\/(SigninApp|dailylottery|userLogin|mobileService|Query) url script-request-header https://raw.githubusercontent.com/enkiger/Proxies/refs/heads/main/china_unicom_cookie.js
+^https?:\/\/.*chinaunicom\.cn\/.* url script-request-header https://raw.githubusercontent.com/enkiger/Proxies/refs/heads/main/china_unicom_cookie.js
