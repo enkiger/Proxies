@@ -1,31 +1,45 @@
 /**
  * @file china_unicom_cookie.js
- * @description 适用 Quantumult X 的联通 App Cookie 抓取脚本
- * 触发通知后，Cookie 会被自动复制到系统剪贴板
+ * @description 联通 Cookie & Token 双重合并抓取版
  */
 
 const cookieName = '中国联通';
-const cookieKey = 'chavy_cookie_10010'; // 保持与主流联通脚本的 Key 一致，方便通用
+const cookieKey = 'chavy_cookie_10010';
+const tokenKey = 'chavy_token_10010';
 
 if ($request && $request.headers) {
-  // 获取请求头中的 Cookie
   const CookieVal = $request.headers['Cookie'] || $request.headers['cookie'];
   
   if (CookieVal) {
-    // 检查是否包含联通的关键登录凭证（如 t3_token、ecs_token 等）
-    if (CookieVal.indexOf('t3_token') !== -1 || CookieVal.indexOf('devicedid') !== -1) {
-      const saveResult = $prefs.setValueForKey(CookieVal, cookieKey);
+    // 1. 如果是 Token 请求
+    if (CookieVal.indexOf('ecs_token') !== -1 || CookieVal.indexOf('t3_token') !== -1) {
+      $prefs.setValueForKey(CookieVal, tokenKey);
       
-      if (saveResult) {
-        $notify(
-          `${cookieName} - Cookie 获取成功 🎉`,
-          '点击或下拉通知，Cookie 已自动复制到剪贴板！',
-          `${CookieVal.substring(0, 50)}... [已自动复制完整内容]`,
-          { "update-pasteboard": CookieVal } // 核心：圈X特有属性，触发通知即写入剪贴板
-        );
-      } else {
-        $notify(cookieName, '写入本地缓存失败 ⚠️', '请尝试重启 Quantumult X 后重试');
-      }
+      // 尝试读取之前存的 Cookie 拼在一起
+      const oldCookie = $prefs.valueForKey(cookieKey) || '';
+      const combined = `【Token】:\n${CookieVal}\n\n【Cookie】:\n${oldCookie}`;
+      
+      $notify(
+        `${cookieName} - Token 获取成功 🔑`,
+        '已将 Token 和 Cookie 合并复制到剪贴板！',
+        `${CookieVal.substring(0, 40)}...`,
+        { "update-pasteboard": combined }
+      );
+    } 
+    // 2. 如果是普通 Cookie 请求
+    else if (CookieVal.indexOf('devicedid') !== -1 || CookieVal.indexOf('ecs_cook') !== -1) {
+      $prefs.setValueForKey(CookieVal, cookieKey);
+      
+      // 尝试读取之前存的 Token 拼在一起
+      const oldToken = $prefs.valueForKey(tokenKey) || '';
+      const combined = `【Token】:\n${oldToken}\n\n【Cookie】:\n${CookieVal}`;
+      
+      $notify(
+        `${cookieName} - Cookie 获取成功 🍪`,
+        '已将 Token 和 Cookie 合并复制到剪贴板！',
+        `${CookieVal.substring(0, 40)}...`,
+        { "update-pasteboard": combined }
+      );
     }
   }
 }
