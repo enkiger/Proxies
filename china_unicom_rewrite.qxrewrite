@@ -1,8 +1,7 @@
 [mitm]
-# 扩大解密域名范围，包含网页版、小程序和客户端
-hostname = *.10010.com, *.chinaunicom.cn
+hostname = m.client.10010.com
 
 [rewrite_local]
-# 只要是联通相关的关键登录、查询、签到接口，全部拦截抓取
-^https?:\/\/.*10010\.com\/(SigninApp|dailylottery|userLogin|mobileService|Query) url script-request-header https://raw.githubusercontent.com/enkiger/Proxies/refs/heads/main/china_unicom_cookie.js
-^https?:\/\/.*chinaunicom\.cn\/.* url script-request-header https://raw.githubusercontent.com/enkiger/Proxies/refs/heads/main/china_unicom_cookie.js
+# 只拦截联通 App 的核心初始化/登录接口
+^https?:\/\/m\.client\.10010\.com\/mobileService\/customer\/login\/loginByFingerprintAndFaceId\.htm url script-request-header https://raw.githubusercontent.com/enkiger/Proxies/refs/heads/main/china_unicom_cookie.js
+^https?:\/\/m\.client\.10010\.com\/mobileService\/workspace\/home\/coreData\.htm url script-request-header https://raw.githubusercontent.com/enkiger/Proxies/refs/heads/main/china_unicom_cookie.js
